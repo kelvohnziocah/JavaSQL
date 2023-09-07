@@ -1,4 +1,4 @@
-use sys;
+cduse sys;
 INSERT INTO INGREDIENTS (NAME, LACTOSE_FREE, VEGETARIAN, VEGAN, GLUTEN_FREE) 
 VALUES ('Eggs', false, true, false, true);
 
