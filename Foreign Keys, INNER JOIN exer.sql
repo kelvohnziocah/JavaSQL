@@ -1,0 +1,87 @@
+#Return the name of all meals that contain garlic:
+
+SELECT DISTINCT M.NAME
+FROM MEAL M
+INNER JOIN INGREDIENT I ON M.MEAL_ID = I.MEAL_ID
+WHERE I.NAME = 'garlic';
+
+#Return the number of meals with vegetarian ingredients:
+
+SELECT COUNT(DISTINCT M.MEAL_ID)
+FROM MEAL M
+INNER JOIN INGREDIENT I ON M.MEAL_ID = I.MEAL_ID
+WHERE I.VEGETARIAN = true;
+
+#Return the names of meals that have at least 1 gluten-free ingredient and at least 1 vegan ingredient:
+
+SELECT DISTINCT M.NAME
+FROM MEAL M
+WHERE EXISTS (
+    SELECT 1
+    FROM INGREDIENT I
+    WHERE M.MEAL_ID = I.MEAL_ID AND I.GLUTEN_FREE = true
+) AND EXISTS (
+    SELECT 1
+    FROM INGREDIENT I
+    WHERE M.MEAL_ID = I.MEAL_ID AND I.VEGAN = true
+);
+
+#Return the average number of ingredients per meal:
+
+SELECT AVG(IngredientCount)
+FROM (
+    SELECT M.MEAL_ID, COUNT(*) AS IngredientCount
+    FROM MEAL M
+    INNER JOIN INGREDIENT I ON M.MEAL_ID = I.MEAL_ID
+    GROUP BY M.MEAL_ID
+) AS IngredientCounts;
+#Return the names of meals that have more than 3 ingredients:
+
+SELECT M.NAME
+FROM MEAL M
+INNER JOIN (
+    SELECT M.MEAL_ID, COUNT(*) AS IngredientCount
+    FROM MEAL M
+    INNER JOIN INGREDIENT I ON M.MEAL_ID = I.MEAL_ID
+    GROUP BY M.MEAL_ID
+    HAVING COUNT(*) > 3
+) AS MealsWithMoreThan3Ingredients ON M.MEAL_ID = MealsWithMoreThan3Ingredients.MEAL_ID;
+
+#Creating customer table
+CREATE TABLE CUSTOMER (
+    CUSTOMER_ID INT,
+    NAME VARCHAR(255),
+    ADDRESS VARCHAR(255)
+);
+#Creating ordering table
+CREATE TABLE ORDERING (
+    ORDER_ID INT,
+    CUSTOMER_ID INT,
+    ORDER_DATE DATE,
+    TOTAL_COST DECIMAL(10,2)
+);
+#Inner Join for CUSTOMER and ORDERING tables
+
+SELECT CUSTOMER.NAME, CUSTOMER.ADDRESS, ORDERING.ORDER_DATE, ORDERING.TOTAL_COST
+FROM CUSTOMER
+INNER JOIN ORDERING
+ON CUSTOMER.CUSTOMER_ID = ORDERING.CUSTOMER_ID;
+
+#Creating Product and inventory tables
+CREATE TABLE PRODUCT (
+    PRODUCT_ID INT,
+    NAME VARCHAR(255),
+    PRICE DECIMAL(10,2)
+);
+CREATE TABLE INVENTORY (
+    PRODUCT_ID INT,
+    STORE_ID INT,
+    QUANTITY INT
+);
+
+#Inner Join for PRODUCT and INVENTORY tables
+
+SELECT PRODUCT.NAME, PRODUCT.PRICE, INVENTORY.QUANTITY
+FROM PRODUCT
+INNER JOIN INVENTORY
+ON PRODUCT.PRODUCT_ID = INVENTORY.PRODUCT_ID;
